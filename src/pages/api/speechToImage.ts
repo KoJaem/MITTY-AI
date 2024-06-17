@@ -49,12 +49,24 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     });
 
     try {
-      const response = await openai.audio.transcriptions.create({
+      const speechData = await openai.audio.transcriptions.create({
         file: fs.createReadStream(filePath),
         model: "whisper-1",
       });
 
-      res.status(200).json({ transcription: response.text });
+      const speechText = speechData.text;
+
+      const response = await openai.images.generate({
+        model: "dall-e-3",
+        prompt: `${speechText}`,
+        n: 1,
+        size: "1024x1024",
+      });
+
+      res.status(200).json({
+        speechText,
+        image: response.data[0].url,
+      });
     } catch (error) {
       res.status(500).json({ message: "Error transcribing the audio", error });
     } finally {

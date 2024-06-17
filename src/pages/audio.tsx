@@ -45,7 +45,7 @@ export default function Home() {
 
     
     try {
-      const response = await axios.post("/api/speechToText", formData);
+      const response = await axios.post("/api/speechToImage", formData);
       console.log("파일 전송 성공", response.data);
     } catch (error) {
       console.error("파일 전송 실패", error);
