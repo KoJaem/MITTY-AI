@@ -28,41 +28,27 @@ const config: Config = {
     extend: {
       colors: {
         primary: {
-          DEFAULT: "#FF8D00",
-          10: "#FFF0D9",
-          20: "#FFE7C4",
-          30: "#FFE0B5",
-          40: "#FED9A6",
-          50: "#FDC886",
-          60: "#FFC266",
-          70: "#FFB54D",
-          80: "#FFA733",
-          90: "#FF9600",
-          foreground: "#FFFDF9",
+          DEFAULT: "#7BD3EA",
+          10: "#F0FBFF",
+          20: "#E0F6FF",
+          30: "#D1F0FF",
+          40: "#C1EBFF",
+          50: "#A2DFFF",
+          60: "#83D2FF",
+          70: "#63C6FF",
+          80: "#44B9FF",
+          90: "#25ADFF",
+          100: "#06A0FF",
         },
         secondary: {
-          DEFAULT: "#FCF0E1",
+          DEFAULT: "#A1EEBD",
           foreground: "#010816",
         },
-        destructive: {
-          DEFAULT: "#ee4444",
-          foreground: "#f7f9fb",
+        tertiary: {
+          DEFAULT: "#F6F7C4",
         },
-        muted: {
-          DEFAULT: "#f1f5f9",
-          foreground: "#64748b",
-        },
-        accent: {
-          DEFAULT: "#f1f5f9",
-          foreground: "#0f172a",
-        },
-        popover: {
-          DEFAULT: "#ffffff",
-          foreground: "#010816",
-        },
-        card: {
-          DEFAULT: "#ffffff",
-          foreground: "#010816",
+        quaternary: {
+          DEFAULT: "#F6D6D6"
         },
         gray: "#ADADAD",
         black: "#000000",
