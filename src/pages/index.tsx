@@ -1,12 +1,12 @@
-import axios from 'axios';
-import { useRef, useEffect } from "react";
+import axios from "axios";
+import { useEffect, useRef } from "react";
 
 export default function VideoCapture() {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
-    const initCamera = async() => {
+    const initCamera = async () => {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
           video: true,
@@ -17,7 +17,7 @@ export default function VideoCapture() {
       } catch (err) {
         console.error("Error accessing camera: ", err);
       }
-    }
+    };
     initCamera();
   }, []);
 
@@ -39,17 +39,9 @@ export default function VideoCapture() {
 
   const sendImageToAPI = async (base64Image: string) => {
     try {
-      const response = await axios.post(
-        "/api/drawingCharacter",
-        {
-          image: base64Image,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await axios.post("/api/drawingCharacter", {
+        image: base64Image,
+      });
       console.log("Image processed:", response.data);
     } catch (error) {
       console.error("Error uploading image", error);
