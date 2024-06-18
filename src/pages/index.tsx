@@ -50,7 +50,7 @@ export default function VideoCapture() {
 
   return (
     <div>
-      <video ref={videoRef} autoPlay playsInline></video>
+      <video ref={videoRef} autoPlay muted playsInline></video>
       <canvas ref={canvasRef} style={{ display: "none" }}></canvas>
       <button onClick={captureImage}>Capture Image</button>
     </div>

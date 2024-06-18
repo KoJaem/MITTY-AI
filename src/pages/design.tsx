@@ -1,5 +1,6 @@
 import { ChatBubbleOvalLeftEllipsisIcon } from "@heroicons/react/16/solid";
 import { motion } from "framer-motion";
+import { useRouter } from "next/router";
 
 const TitleVariants = {
   hidden: { opacity: 0 },
@@ -32,8 +33,18 @@ const item = {
 };
 
 export default function Index() {
+  const router = useRouter();
+
   return (
-    <div className="min-h-[100vh] h-full bg-primary-30 flex flex-col items-center py-[80px]">
+    <motion.section
+      exit={{
+        opacity: [1, 0],
+        transition: {
+          duration: 1,
+        },
+      }}
+      className="min-h-[100vh] h-full bg-primary-30 flex flex-col items-center py-[80px]"
+    >
       <div className="flex flex-col items-center gap-[100px]">
         <div className="flex flex-col items-center gap-[40px]">
           <motion.h1
@@ -179,11 +190,12 @@ export default function Index() {
           whileTap={{
             scale: 0.9,
           }}
+          onClick={() => router.push("/")}
           className="text-primary-30 px-[40px] py-[12px] rounded-full bg-primary-100"
         >
           시작하기
         </motion.button>
       </div>
-    </div>
+    </motion.section>
   );
 }
