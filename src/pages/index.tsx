@@ -68,6 +68,7 @@ export default function Index() {
               right: 100,
               bottom: 100,
             }}
+            dragElastic={0.2}
           >
             M I T T Y
           </motion.h1>
@@ -163,12 +164,7 @@ export default function Index() {
             initial="initial"
             whileInView="whileInView"
             drag
-            dragConstraints={{
-              left: 0,
-              top: 0,
-              right: 0,
-              bottom: 0,
-            }}
+            dragSnapToOrigin
           >
             이 모든것을 한번에 모아놓은
           </motion.p>
@@ -178,12 +174,7 @@ export default function Index() {
             initial="hidden"
             whileInView="show"
             drag
-            dragConstraints={{
-              left: 0,
-              top: 0,
-              right: 0,
-              bottom: 0,
-            }}
+            dragSnapToOrigin
           >
             <motion.span
               variants={item}
@@ -235,6 +226,7 @@ export default function Index() {
             right: 0,
             bottom: 0,
           }}
+          dragSnapToOrigin
         >
           지금 여러분의 상상을 그려보세요! 🎨
         </motion.p>
@@ -245,7 +237,7 @@ export default function Index() {
           whileTap={{
             scale: 0.9,
           }}
-          onClick={() => router.push("/")}
+          onClick={() => router.push("/main")}
           className="text-primary-30 px-[40px] py-[12px] rounded-full bg-primary-100"
         >
           시작하기
