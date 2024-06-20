@@ -42,16 +42,23 @@ export default function Index() {
 
   return (
     <motion.section
+      initial={{ opacity: 0 }}
+      animate={{
+        opacity: 1,
+        transition: {
+          duration: 1,
+        },
+      }}
       exit={{
         opacity: [1, 0],
         transition: {
           duration: 1,
         },
       }}
-      className="min-h-[100vh] h-full bg-primary-30 flex flex-col items-center py-[80px]"
+      className="h-full bg-primary-30 flex flex-col items-center py-[80px]"
     >
-      <div className="flex flex-col items-center gap-[100px]">
-        <div className="flex flex-col items-center gap-[40px]">
+      <section className="flex flex-col items-center gap-[100px] h-full">
+        <article className="flex flex-col items-center gap-[40px]">
           <motion.h1
             whileInView={{
               opacity: [0, 1],
@@ -90,7 +97,7 @@ export default function Index() {
           >
             우리의 상상은 현실이 된다
           </motion.h2>
-        </div>
+        </article>
         <motion.div
           drag
           dragConstraints={{
@@ -242,7 +249,7 @@ export default function Index() {
         >
           시작하기
         </motion.button>
-      </div>
+      </section>
     </motion.section>
   );
 }

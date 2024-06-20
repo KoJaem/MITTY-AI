@@ -1,5 +1,6 @@
-import { formatConversationHistory } from "@/utils/formatConversationHistory";
+import { formatOpenAIChatHistory } from "@/utils/formatHistory";
 import { yupResolver } from "@hookform/resolvers/yup";
+import axios from "axios";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
@@ -10,12 +11,7 @@ interface FormType {
 }
 
 export default function Main() {
-  const [history, setHistory] = useState<Array<string>>([
-    "test 첫번째",
-    "test 두번째",
-    "test 세번째",
-    "test 네번째",
-  ]);
+  const [history, setHistory] = useState<Array<string>>([]);
 
   const schema = object().shape({
     chat: string().required(`입력 해주세요`),
@@ -25,7 +21,12 @@ export default function Main() {
     resolver: yupResolver(schema),
   });
 
-  const { handleSubmit, register, resetField } = formMethods;
+  const {
+    handleSubmit,
+    register,
+    resetField,
+    formState: { isSubmitting },
+  } = formMethods;
 
   const submit = async (data: FormType) => {
     console.log(data.chat);
@@ -34,23 +35,27 @@ export default function Main() {
 
     resetField("chat");
 
-    const formattedConversationHistory = formatConversationHistory(history);
+    const formattedOpenAIChatHistory = formatOpenAIChatHistory(history);
 
     setHistory(prev => [...prev, `${chat}`]);
+    
+    const response = await axios.post("/api/chat", {
+      chat,
+      history: formattedOpenAIChatHistory,
+    });
 
-    // Todo chat API Request
-    // const { data: response } = await axios.post(
-    //   {
-    //     chat,
-    //     history: formattedConversationHistory,
-    //   }
-    // );
-
-    // setHistory(prev => [...prev, `${response}`]);
+    setHistory(prev => [...prev, `${response.data}`]);
   };
 
   return (
     <motion.section
+      initial={{ opacity: 0 }}
+      animate={{
+        opacity: 1,
+        transition: {
+          duration: 1,
+        },
+      }}
       exit={{
         opacity: [1, 0],
         transition: {
@@ -73,7 +78,7 @@ export default function Main() {
             drag
             dragSnapToOrigin
           >
-            상상 더해보기
+            상상 더하기
           </motion.h1>
           <motion.h2
             // variants={scrollVariants}
@@ -91,8 +96,26 @@ export default function Main() {
             dragSnapToOrigin
             className="text-[20px] font-semibold"
           >
-            AI와 대화해보고 상상을 더해보세요!
+            AI에게 나만의 스토리를 전달해보세요!
           </motion.h2>
+          <motion.h3
+            // variants={scrollVariants}
+            // initial="initial"
+            // whileInView="whileInView"
+            whileInView={{
+              opacity: [0, 1],
+              x: [-40, 0],
+              y: [50, 0],
+              transition: {
+                duration: 1,
+              },
+            }}
+            drag
+            dragSnapToOrigin
+            className="text-[16px] font-semibold text-[#6b6b6b]"
+          >
+            여러분의 이야기에 상상을 추가해줄거에요!
+          </motion.h3>
         </div>
         <FormProvider {...formMethods}>
           <form
@@ -103,7 +126,7 @@ export default function Main() {
               {history.map((data, i) => {
                 return i % 2 === 0 ? (
                   <div
-                    className="bg-gray w-fit p-2 rounded-lg self-end ml-[20%]"
+                    className="bg-gray p-2 rounded-lg self-end ml-[20%]"
                     key={i}
                   >
                     {data}
@@ -117,9 +140,22 @@ export default function Main() {
                   </div>
                 );
               })}
-              <input {...register("chat")} />
+              {isSubmitting && (
+                <div className="flex w-full items-center justify-center border border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-800 dark:border-gray-700">
+                  <div className="px-3 py-1 text-xs font-medium leading-none text-center text-blue-800 bg-blue-200 rounded-full animate-pulse dark:bg-blue-900 dark:text-blue-200">
+                    loading...
+                  </div>
+                </div>
+              )}
+              <input
+                className="w-full"
+                {...register("chat")}
+                placeholder="여러분의 스토리를 적어주세요"
+              />
             </div>
-            <button type="submit">제출</button>
+            <button type="submit" disabled={isSubmitting}>
+              제출
+            </button>
           </form>
         </FormProvider>
       </div>
