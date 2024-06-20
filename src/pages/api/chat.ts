@@ -29,12 +29,13 @@ export default async function handler(
         {
           role: "system",
           content:
-            "너는 친절한 assistant야. 전체 messages 의 맥락을 파악하여 대답해. 사용자가 말하는 이아기에 상상을 추가해서 재미있는 스토리로 바꿔줘.",
+            "너는 친절한 assistant야. 전체 messages 의 맥락을 파악하여 대답해. 사용자가 말하는 문장에 상상을 더해서 재미있는 대답을 5문장 이내로 대답해.",
         },
         ...history,
         { role: "user", content: chat },
       ],
       temperature: 1,
+      max_tokens: 500,
     });
 
     res.status(200).json(completion.choices[0].message.content);
