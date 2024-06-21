@@ -2,6 +2,8 @@ import axios from "axios";
 import { NextApiRequest, NextApiResponse } from "next";
 import OpenAI from "openai";
 
+export const maxDuration = 60;
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse

@@ -4,6 +4,8 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import OpenAI from "openai";
 import path from "path";
 
+export const maxDuration = 60;
+
 export interface SpeechToImageResponse {
   speechText?: string;
   image?: string;
