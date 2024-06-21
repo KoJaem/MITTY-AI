@@ -6,6 +6,10 @@ export interface CamToImageResponse {
   url?: string;
 }
 
+export const config = {
+  maxDuration: 60,
+};
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse

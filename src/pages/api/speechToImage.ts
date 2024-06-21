@@ -3,7 +3,6 @@ import fs from "fs";
 import type { NextApiRequest, NextApiResponse } from "next";
 import OpenAI from "openai";
 import os from "os";
-import path from "path";
 
 export interface SpeechToImageResponse {
   speechText?: string;
@@ -19,6 +18,7 @@ export const config = {
   api: {
     bodyParser: false,
   },
+  maxDuration: 60,
 };
 
 // Helper function to parse form data
