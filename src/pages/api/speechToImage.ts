@@ -4,6 +4,16 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import OpenAI from "openai";
 import path from "path";
 
+export interface SpeechToImageResponse {
+  speechText?: string;
+  image?: string;
+}
+
+export interface ErrorResponse {
+  message: string;
+  error?: Error;
+}
+
 export const config = {
   api: {
     bodyParser: false,
@@ -27,7 +37,10 @@ const parseForm = (
   });
 };
 
-const handler = async (req: NextApiRequest, res: NextApiResponse) => {
+const handler = async (
+  req: NextApiRequest,
+  res: NextApiResponse<SpeechToImageResponse | ErrorResponse>
+) => {
   if (req.method !== "POST") {
     res.status(405).json({ message: "Method not allowed" });
     return;
@@ -68,12 +81,19 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         image: response.data[0].url,
       });
     } catch (error) {
-      res.status(500).json({ message: "Error transcribing the audio", error });
+      res
+        .status(500)
+        .json({
+          message: "Error transcribing the audio",
+          error: error as Error,
+        });
     } finally {
       fs.unlinkSync(filePath); // 처리 후 파일 삭제
     }
   } catch (error) {
-    res.status(500).json({ message: "Error parsing the files", error });
+    res
+      .status(500)
+      .json({ message: "Error parsing the files", error: error as Error });
   }
 };
 
