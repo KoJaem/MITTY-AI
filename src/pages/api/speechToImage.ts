@@ -5,8 +5,6 @@ import OpenAI from "openai";
 import os from "os";
 import path from "path";
 
-export const maxDuration = 60;
-
 export interface SpeechToImageResponse {
   speechText?: string;
   image?: string;
