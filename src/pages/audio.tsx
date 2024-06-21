@@ -1,6 +1,5 @@
 import axios from "axios";
 import { motion } from "framer-motion";
-import Image from 'next/image';
 import { useEffect, useRef, useState } from "react";
 
 export default function Home() {
@@ -36,6 +35,10 @@ export default function Home() {
 
   const stopRecording = () => {
     setRecording(false);
+  };
+
+  const resetRecording = () => {
+    setAudioBlob(null);
   };
 
   const sendAudioToApi = async () => {
@@ -126,7 +129,7 @@ export default function Home() {
               <button
                 className="text-primary-30 px-[40px] py-[12px] rounded-full bg-primary-100 disabled:bg-gray disabled:text-black"
                 onClick={startRecording}
-                disabled={recording}
+                disabled={recording || !!audioBlob}
               >
                 Start
               </button>
@@ -141,7 +144,7 @@ export default function Home() {
 
             <button
               className="text-primary-30 px-[40px] py-[12px] rounded-full bg-primary-100 disabled:bg-gray disabled:text-black"
-              onClick={startRecording}
+              onClick={resetRecording}
               disabled={!audioBlob}
             >
               다시 녹음하기
