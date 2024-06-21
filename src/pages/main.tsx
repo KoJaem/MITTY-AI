@@ -1,3 +1,4 @@
+import Loading from "@/components/Loading";
 import { formatOpenAIChatHistory } from "@/utils/formatHistory";
 import { PaperAirplaneIcon } from "@heroicons/react/16/solid";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -78,8 +79,8 @@ export default function Main() {
       }}
       className="min-h-[100vh] h-full bg-primary-30 flex flex-col items-center py-[80px]"
     >
-      <div className="flex flex-col items-center gap-[40px]">
-        <div className="flex flex-col items-center gap-[40px]">
+      <section className="flex flex-col items-center gap-[40px]">
+        <article className="flex flex-col items-center gap-[40px]">
           <motion.h1
             whileInView={{
               opacity: [0, 1],
@@ -130,42 +131,36 @@ export default function Main() {
           >
             여러분의 이야기에 재치있는 대답을 해줄거에요!
           </motion.h3>
-        </div>
+        </article>
         <FormProvider {...formMethods}>
           <form
             onSubmit={handleSubmit(submit)}
             className="w-full flex flex-col justify-center"
           >
-            <div className="relative flex flex-col w-full bg-primary h-[400px] px-[16px] pt-[12px] pb-[64px] rounded-md">
-              <div
+            <article className="relative flex flex-col w-full bg-primary h-[400px] px-[16px] pt-[12px] pb-[64px] rounded-md">
+              <article
                 className="flex flex-col gap-2 w-[200px] md:w-[400px] overflow-auto h-[360px] z-[999px]"
                 ref={chatContainerRef}
               >
                 {history.map((data, i) => {
                   return i % 2 === 0 ? (
-                    <div
-                      className="bg-gray p-4 rounded-md self-end ml-[20px] mr-[4px] break-all"
+                    <p
+                      className="bg-gray px-[12px] py-[8px] rounded-md self-end ml-[20px] mr-[4px] break-all leading-5"
                       key={i}
                     >
                       {data}
-                    </div>
+                    </p>
                   ) : (
-                    <div
-                      className=" bg-amber-300 w-fit p-4 rounded-md ml-[4px] mr-[20px] break-all"
+                    <p
+                      className=" bg-amber-300 w-fit px-[12px] py-[8px] rounded-md ml-[4px] mr-[20px] break-all leading-5"
                       key={i}
                     >
                       {data}
-                    </div>
+                    </p>
                   );
                 })}
-                {isSubmitting && (
-                  <div className="flex w-full items-center justify-center border border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-800 dark:border-gray-700">
-                    <div className="px-3 py-1 text-xs font-medium leading-none text-center text-blue-800 bg-blue-200 rounded-full animate-pulse dark:bg-blue-900 dark:text-blue-200">
-                      loading...
-                    </div>
-                  </div>
-                )}
-              </div>
+                {isSubmitting && <Loading />}
+              </article>
               <article className="absolute bottom-[12px] left-1/2 translate-x-[-50%] flex items-center justify-center w-full">
                 <input
                   className="rounded-md py-2 pl-4 pr-[24px] h-[40px] outline-none"
@@ -183,10 +178,10 @@ export default function Main() {
                   <PaperAirplaneIcon color="#ADADAD" width={20} height={20} />
                 </button>
               </article>
-            </div>
+            </article>
           </form>
         </FormProvider>
-      </div>
+      </section>
     </motion.section>
   );
 }
