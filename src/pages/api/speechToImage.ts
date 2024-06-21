@@ -2,6 +2,7 @@ import formidable, { File } from "formidable";
 import fs from "fs";
 import type { NextApiRequest, NextApiResponse } from "next";
 import OpenAI from "openai";
+import os from "os";
 import path from "path";
 
 export const maxDuration = 60;
@@ -28,7 +29,7 @@ const parseForm = (
 ): Promise<{ fields: formidable.Fields; files: formidable.Files }> => {
   return new Promise((resolve, reject) => {
     const form = formidable({
-      uploadDir: path.join(process.cwd(), "/public"),
+      uploadDir: os.tmpdir(),
       keepExtensions: true,
     });
 
@@ -53,7 +54,6 @@ const handler = async (
 
     if (!file || !(file as File).filepath) {
       return res.status(400).json({ message: "No file uploaded" });
-      
     }
 
     const filePath = (file as File).filepath;
