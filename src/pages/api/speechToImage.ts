@@ -42,8 +42,7 @@ const handler = async (
   res: NextApiResponse<SpeechToImageResponse | ErrorResponse>
 ) => {
   if (req.method !== "POST") {
-    res.status(405).json({ message: "Method not allowed" });
-    return;
+    return res.status(405).json({ message: "Method not allowed" });
   }
 
   try {
@@ -51,8 +50,8 @@ const handler = async (
     const file = Array.isArray(files.file) ? files.file[0] : files.file;
 
     if (!file || !(file as File).filepath) {
-      res.status(400).json({ message: "No file uploaded" });
-      return;
+      return res.status(400).json({ message: "No file uploaded" });
+      
     }
 
     const filePath = (file as File).filepath;
@@ -76,22 +75,20 @@ const handler = async (
         size: "1024x1024",
       });
 
-      res.status(200).json({
+      return res.status(200).json({
         speechText,
         image: response.data[0].url,
       });
     } catch (error) {
-      res
-        .status(500)
-        .json({
-          message: "Error transcribing the audio",
-          error: error as Error,
-        });
+      return res.status(500).json({
+        message: "Error transcribing the audio",
+        error: error as Error,
+      });
     } finally {
       fs.unlinkSync(filePath); // 처리 후 파일 삭제
     }
   } catch (error) {
-    res
+    return res
       .status(500)
       .json({ message: "Error parsing the files", error: error as Error });
   }

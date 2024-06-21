@@ -58,19 +58,19 @@ export default async function handler(
 
     // console.log("response.data[0].url", response.data[0].url);
 
-    res.status(200).json(response.data[0].url);
+    return res.status(200).json(response.data[0].url);
   } catch (error) {
     if (axios.isAxiosError(error)) {
       console.error(
         "Error communicating with OpenAI API:",
         error.response?.data || error.message
       );
-      res.status(500).json({
+      return res.status(500).json({
         error: error.response?.data || "Error communicating with OpenAI API",
       });
     } else {
       console.error("Unexpected error:", error);
-      res.status(500).json({ error: "Unexpected error occurred" });
+      return res.status(500).json({ error: "Unexpected error occurred" });
     }
   }
 }
