@@ -4,6 +4,10 @@ import OpenAI from "openai";
 
 export const maxDuration = 60;
 
+export interface CamToImageResponse {
+  url?: string;
+}
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -60,7 +64,7 @@ export default async function handler(
 
     // console.log("response.data[0].url", response.data[0].url);
 
-    return res.status(200).json(response.data[0].url);
+    return res.status(200).json({ url: response.data[0].url });
   } catch (error) {
     if (axios.isAxiosError(error)) {
       console.error(

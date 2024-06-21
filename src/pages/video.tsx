@@ -3,6 +3,7 @@ import axios from "axios";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
+import { CamToImageResponse } from "./api/drawingCharacter";
 
 export default function VideoCapture() {
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -48,10 +49,13 @@ export default function VideoCapture() {
 
   const sendImageToAPI = async (base64Image: string) => {
     try {
-      const response = await axios.post("/api/drawingCharacter", {
-        image: base64Image,
-      });
-      setSrc(response.data);
+      const response = await axios.post<CamToImageResponse>(
+        "/api/drawingCharacter",
+        {
+          image: base64Image,
+        }
+      );
+      setSrc(response.data.url);
     } catch (error) {
       console.error("Error uploading image", error);
     } finally {
