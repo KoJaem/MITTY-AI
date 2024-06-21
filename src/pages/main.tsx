@@ -139,7 +139,7 @@ export default function Main() {
           >
             <article className="relative flex flex-col w-full bg-primary h-[400px] px-[16px] pt-[12px] pb-[64px] rounded-md">
               <article
-                className="flex flex-col gap-2 w-[200px] md:w-[400px] overflow-auto h-[360px] z-[999px]"
+                className="flex flex-col gap-2 w-[300px] md:w-[400px] overflow-auto h-[360px] z-[999px]"
                 ref={chatContainerRef}
               >
                 {history.map((data, i) => {
