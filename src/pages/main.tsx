@@ -33,22 +33,26 @@ export default function Main() {
   } = formMethods;
 
   const submit = async (data: FormType) => {
-    console.log(data.chat);
+    try {
+      console.log(data.chat);
 
-    const chat = data.chat;
+      const chat = data.chat;
 
-    resetField("chat");
+      resetField("chat");
 
-    const formattedOpenAIChatHistory = formatOpenAIChatHistory(history);
+      const formattedOpenAIChatHistory = formatOpenAIChatHistory(history);
 
-    setHistory(prev => [...prev, `${chat}`]);
+      setHistory(prev => [...prev, `${chat}`]);
 
-    const response = await axios.post("/api/chat", {
-      chat,
-      history: formattedOpenAIChatHistory,
-    });
+      const response = await axios.post("/api/chat", {
+        chat,
+        history: formattedOpenAIChatHistory,
+      });
 
-    setHistory(prev => [...prev, `${response.data}`]);
+      setHistory(prev => [...prev, `${response.data}`]);
+    } catch (error) {
+      setHistory(prev => [...prev, `오류가 발생했습니다. 다시 시도해주세요.`]);
+    }
   };
 
   const scrollToBottom = () => {
