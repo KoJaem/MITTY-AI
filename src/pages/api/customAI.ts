@@ -20,16 +20,50 @@ export default async function handler(
     apiKey: OPEN_API_KEY,
   });
 
-  const { chat, type, prompt, history } = req.body;
+  const { chat, type, prompt, history, image } = req.body;
 
   if (!prompt) {
     return res.status(400).json({ error: "No chat provided" });
   }
 
   try {
-
     if (type === "image") {
+      const analytics = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: [
+          {
+            role: "user",
+            content: [
+              {
+                type: "image_url",
+                image_url: {
+                  url: image,
+                },
+              },
+            ],
+          },
+          {
+            role: "system",
+            content:
+              "해당 이미지에 대해 분석할 수 있는 내용을 모두 분석해. 잡다한 이야기는 하지말고, 분석한 특징들에 대해서만 최대한 많이 나열해서 답변해. 이미지는 캐릭터, 사람얼굴, 그림 등등 뭐가 올지 모르니까 확실하게 분석해.",
+          },
+        ],
+      });
 
+      const imageFileInfo = analytics?.choices[0]?.message?.content;
+
+      console.log(imageFileInfo);
+
+      // console.log("imageFileInfo", imageFileInfo);
+
+      const response = await openai.images.generate({
+        model: "dall-e-3",
+        prompt: `${imageFileInfo} 의 정보를 기반으로 ${prompt}`,
+        n: 1,
+        size: "1024x1024",
+      });
+
+      return res.status(200).json({ url: response.data[0].url });
     } else {
       const completion = await openai.chat.completions.create({
         model: "gpt-4o",

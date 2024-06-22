@@ -4,27 +4,31 @@ import { PaperAirplaneIcon } from "@heroicons/react/16/solid";
 import { yupResolver } from "@hookform/resolvers/yup";
 import axios from "axios";
 import { motion } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
-import { FormProvider, useForm } from "react-hook-form";
+import Image from "next/image";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
+import { Controller, FormProvider, useForm, useWatch } from "react-hook-form";
 import { object, string } from "yup";
 
 interface FormType {
   chat?: string;
-  type: string;
+  type: "chat" | "image";
   prompt: string;
+  imageFile?: FileList;
 }
 
-export default function Main() {
+export default function Custom() {
   const [history, setHistory] = useState<Array<string>>([]);
   const [promptDisable, setPromptDisable] = useState<boolean>(false);
+  const [thumbnail, setThumbnail] = useState<string | null>(null);
+  const [generatedImageSrc, setGeneratedImageSrc] = useState<string>();
 
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
   const schema = () =>
     object().shape({
-      type: string().required(`타입을 선택해주세요`),
+      type: string().oneOf(["chat", "image"]).required(`타입을 선택해주세요`),
       chat: string().test(
-        "챗봇시에는 chat 필드 필요",
+        "type 이 chat인 경우에는 chat 필드 필요",
         "채팅을 입력해주세요",
         function (value) {
           const { type } = this.parent;
@@ -49,29 +53,62 @@ export default function Main() {
     register,
     resetField,
     watch,
+    control,
     formState: { isSubmitting, errors },
   } = formMethods;
+
+  const watchRadio = useWatch({
+    control,
+    name: "type",
+  });
 
   const submit = async (data: FormType) => {
     setPromptDisable(true);
 
-    const { chat, type, prompt } = data;
+    const { chat, type, prompt, imageFile } = data;
 
-    resetField("chat");
+    if (type === "chat") {
+      resetField("chat");
 
-    const formattedOpenAIChatHistory = formatOpenAIChatHistory(history);
+      const formattedOpenAIChatHistory = formatOpenAIChatHistory(history);
 
-    setHistory(prev => [...prev, `${chat}`]);
+      setHistory(prev => [...prev, `${chat}`]);
 
-    const response = await axios.post("/api/customAI", {
-      chat,
-      type,
-      prompt,
-      history: formattedOpenAIChatHistory,
-    });
+      const response = await axios.post("/api/customAI", {
+        chat,
+        type,
+        prompt,
+        history: formattedOpenAIChatHistory,
+      });
 
-    setHistory(prev => [...prev, `${response.data}`]);
+      setHistory(prev => [...prev, `${response.data}`]);
+    }
+
+    if (type === "image") {
+      // FileList validation
+      if (!data.imageFile || data.imageFile.length === 0) {
+        return;
+      }
+
+      const file = data.imageFile[0];
+      const base64Image = await convertToBase64(file);
+
+      try {
+        const response = await axios.post("/api/customAI", {
+          image: base64Image,
+          type,
+          prompt,
+        });
+
+        console.log(response.data.url);
+        setGeneratedImageSrc(response.data.url);
+      } catch (error) {
+        console.error("Failed to upload image", error);
+      }
+    }
   };
+
+  console.log(generatedImageSrc)
 
   const scrollToBottom = () => {
     if (chatContainerRef.current) {
@@ -83,6 +120,28 @@ export default function Main() {
   useEffect(() => {
     scrollToBottom();
   }, [history]);
+
+  const convertToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = error => reject(error);
+    });
+  };
+
+  const handleThumbnail = (e: ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    setThumbnail(""); // 취소 된 경우 썸네일 삭제로직
+
+    if (e.target.value[0]) {
+      const fileReader = new FileReader();
+      fileReader.readAsDataURL(e.target.files![0]);
+      fileReader.onload = () => {
+        setThumbnail(String(fileReader.result!));
+      };
+    }
+  };
 
   return (
     <motion.section
@@ -156,12 +215,19 @@ export default function Main() {
         </article>
         <section className="flex gap-[4px] justify-around w-full">
           <article className="flex items-center ps-4 border border-gray-200 rounded dark:border-gray-700">
-            <input
-              id="chat"
-              type="radio"
-              value="chat"
-              className="w-6 h-6 text-blue-600"
-              {...register("type")}
+            <Controller
+              name="type"
+              control={control}
+              render={({ field }) => (
+                <input
+                  {...field}
+                  id="chat"
+                  type="radio"
+                  value="chat"
+                  className="w-6 h-6 text-blue-600"
+                  {...register("type")}
+                />
+              )}
             />
             <label
               htmlFor="chat"
@@ -171,13 +237,21 @@ export default function Main() {
             </label>
           </article>
           <article className="flex items-center ps-4 border border-gray-200 rounded dark:border-gray-700">
-            <input
-              id="image"
-              type="radio"
-              value="image"
-              className="w-6 h-6 text-blue-600"
-              {...register("type")}
+            <Controller
+              name="type"
+              control={control}
+              render={({ field }) => (
+                <input
+                  {...field}
+                  id="image"
+                  type="radio"
+                  value="image"
+                  className="w-6 h-6 text-blue-600"
+                  {...register("type")}
+                />
+              )}
             />
+
             <label
               htmlFor="image"
               className="w-full ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
@@ -192,8 +266,16 @@ export default function Main() {
             className="w-full flex flex-col justify-center gap-[8px]"
           >
             <article className="flex flex-col gap-[8px]">
-              <p className="text-[16px]">어떤 대답을 하는 AI를 만드시겠어요?</p>
-              <p className="text-[14px] text-[#6b6b6b]">{`ex) 사용자는 지금 우울한 상태야.. 친절하게 위로의 말을 건네줘`}</p>
+              <p className="text-[16px]">
+                {watchRadio === "chat"
+                  ? "어떤 대답을 하는 AI를 만드시겠어요?"
+                  : "어떤 이미지를 생성하는 AI를 만드시겠어요?"}
+              </p>
+              <p className="text-[14px] text-[#6b6b6b]">
+                {watchRadio === "chat"
+                  ? `ex) 사용자는 지금 우울한 상태야.. 친절하게 위로의 말을 건네줘`
+                  : "분석한 이미지를 게임캐릭터처럼 만들어줘."}
+              </p>
               <input
                 type="text"
                 disabled={promptDisable}
@@ -203,46 +285,71 @@ export default function Main() {
               />
             </article>
             <article className="relative flex flex-col w-full bg-primary h-[400px] px-[16px] pt-[12px] pb-[64px] rounded-md">
-              <article
-                className="flex flex-col gap-2 w-[300px] md:w-[400px] overflow-auto h-[360px] z-[999px]"
-                ref={chatContainerRef}
-              >
-                {history.map((data, i) => {
-                  return i % 2 === 0 ? (
-                    <p
-                      className="bg-primary-30 px-[12px] py-[8px] rounded-md self-end ml-[20px] mr-[4px] break-all leading-5"
-                      key={i}
+              {watchRadio === "chat" ? (
+                <>
+                  <article
+                    className="flex flex-col gap-2 w-[300px] md:w-[400px] overflow-auto h-[360px] z-[999px]"
+                    ref={chatContainerRef}
+                  >
+                    {history.map((data, i) => {
+                      return i % 2 === 0 ? (
+                        <p
+                          className="bg-primary-30 px-[12px] py-[8px] rounded-md self-end ml-[20px] mr-[4px] break-all leading-5"
+                          key={i}
+                        >
+                          {data}
+                        </p>
+                      ) : (
+                        <p
+                          className="bg-purple-300 w-fit px-[12px] py-[8px] rounded-md ml-[4px] mr-[20px] break-all leading-5"
+                          key={i}
+                        >
+                          {data}
+                        </p>
+                      );
+                    })}
+                    {isSubmitting && <Loading />}
+                  </article>
+                  <article className="absolute bottom-[12px] left-1/2 translate-x-[-50%] flex items-center justify-center w-full">
+                    <input
+                      className="rounded-md py-2 pl-4 pr-[24px] h-[40px] outline-none"
+                      {...register("chat")}
+                      placeholder="무슨 이야기가 하고싶으신가요?"
+                      style={{
+                        width: "calc(100% - 32px)",
+                      }}
+                    />
+                    <button
+                      className="absolute end-[20px]"
+                      type="submit"
+                      disabled={isSubmitting}
                     >
-                      {data}
-                    </p>
-                  ) : (
-                    <p
-                      className="bg-purple-300 w-fit px-[12px] py-[8px] rounded-md ml-[4px] mr-[20px] break-all leading-5 font-semibold"
-                      key={i}
-                    >
-                      {data}
-                    </p>
-                  );
-                })}
-                {isSubmitting && <Loading />}
-              </article>
-              <article className="absolute bottom-[12px] left-1/2 translate-x-[-50%] flex items-center justify-center w-full">
-                <input
-                  className="rounded-md py-2 pl-4 pr-[24px] h-[40px] outline-none"
-                  {...register("chat")}
-                  placeholder="무슨 이야기가 하고싶으신가요?"
-                  style={{
-                    width: "calc(100% - 32px)",
-                  }}
-                />
-                <button
-                  className="absolute end-[20px]"
-                  type="submit"
-                  disabled={isSubmitting}
-                >
-                  <PaperAirplaneIcon color="#ADADAD" width={20} height={20} />
-                </button>
-              </article>
+                      <PaperAirplaneIcon
+                        color="#ADADAD"
+                        width={20}
+                        height={20}
+                      />
+                    </button>
+                  </article>
+                </>
+              ) : (
+                <>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    {...register("imageFile", { required: true })}
+                    onChange={e => {
+                      handleThumbnail(e);
+                    }}
+                  />
+                  <div className="relative w-full h-full">
+                    <Image src={thumbnail || "/"} fill alt="Image" />
+                  </div>
+                  <button type="submit" disabled={isSubmitting}>
+                    서브밋
+                  </button>
+                </>
+              )}
             </article>
           </form>
         </FormProvider>
