@@ -138,7 +138,7 @@ export default function VideoCapture() {
             {!thumbnail ? (
               <video
                 ref={videoRef}
-                className="rounded-md"
+                className="w-full h-full"
                 autoPlay
                 muted
                 playsInline
@@ -147,7 +147,7 @@ export default function VideoCapture() {
               <Image
                 src={src ?? thumbnail}
                 fill
-                className="rounded-md"
+                className='rounded-md'
                 objectFit="contain"
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 alt="User Image"
