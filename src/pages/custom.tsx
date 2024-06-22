@@ -1,4 +1,5 @@
 import Loading from "@/components/Loading";
+import LoadingWithBG from "@/components/LoadingWithBG";
 import { formatOpenAIChatHistory } from "@/utils/formatHistory";
 import { PaperAirplaneIcon } from "@heroicons/react/16/solid";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -20,7 +21,9 @@ export default function Custom() {
   const [history, setHistory] = useState<Array<string>>([]);
   const [promptDisable, setPromptDisable] = useState<boolean>(false);
   const [thumbnail, setThumbnail] = useState<string | null>(null);
-  const [generatedImageSrc, setGeneratedImageSrc] = useState<string>();
+  const [generatedImageSrc, setGeneratedImageSrc] = useState<string | null>(
+    null
+  );
 
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
@@ -51,8 +54,10 @@ export default function Custom() {
   const {
     handleSubmit,
     register,
-    resetField,
     watch,
+    setValue,
+    resetField,
+    reset,
     control,
     formState: { isSubmitting, errors },
   } = formMethods;
@@ -86,11 +91,11 @@ export default function Custom() {
 
     if (type === "image") {
       // FileList validation
-      if (!data.imageFile || data.imageFile.length === 0) {
+      if (!imageFile || imageFile.length === 0) {
         return;
       }
 
-      const file = data.imageFile[0];
+      const file = imageFile[0];
       const base64Image = await convertToBase64(file);
 
       try {
@@ -99,16 +104,12 @@ export default function Custom() {
           type,
           prompt,
         });
-
-        console.log(response.data.url);
         setGeneratedImageSrc(response.data.url);
       } catch (error) {
         console.error("Failed to upload image", error);
       }
     }
   };
-
-  console.log(generatedImageSrc)
 
   const scrollToBottom = () => {
     if (chatContainerRef.current) {
@@ -132,7 +133,8 @@ export default function Custom() {
 
   const handleThumbnail = (e: ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
-    setThumbnail(""); // 취소 된 경우 썸네일 삭제로직
+    setGeneratedImageSrc(""); // 취소 된 경우 썸네일 삭제로직
+    setThumbnail("");
 
     if (e.target.value[0]) {
       const fileReader = new FileReader();
@@ -141,6 +143,20 @@ export default function Custom() {
         setThumbnail(String(fileReader.result!));
       };
     }
+  };
+
+  const handleChangeType = (e: ChangeEvent<HTMLInputElement>) => {
+    const type = e.target.value as "chat" | "image";
+    reset({
+      type,
+      chat: "",
+      prompt: "",
+      imageFile: undefined,
+    });
+    setHistory([]);
+    setPromptDisable(false);
+    setThumbnail(null);
+    setGeneratedImageSrc(null);
   };
 
   return (
@@ -226,6 +242,10 @@ export default function Custom() {
                   value="chat"
                   className="w-6 h-6 text-blue-600"
                   {...register("type")}
+                  onChange={e => {
+                    field.onChange(e);
+                    handleChangeType(e);
+                  }}
                 />
               )}
             />
@@ -248,6 +268,10 @@ export default function Custom() {
                   value="image"
                   className="w-6 h-6 text-blue-600"
                   {...register("type")}
+                  onChange={e => {
+                    field.onChange(e);
+                    handleChangeType(e);
+                  }}
                 />
               )}
             />
@@ -274,7 +298,7 @@ export default function Custom() {
               <p className="text-[14px] text-[#6b6b6b]">
                 {watchRadio === "chat"
                   ? `ex) 사용자는 지금 우울한 상태야.. 친절하게 위로의 말을 건네줘`
-                  : "분석한 이미지를 게임캐릭터처럼 만들어줘."}
+                  : "ex) 분석한 이미지를 게임캐릭터처럼 만들어줘."}
               </p>
               <input
                 type="text"
@@ -284,7 +308,7 @@ export default function Custom() {
                 {...register("prompt")}
               />
             </article>
-            <article className="relative flex flex-col w-full bg-primary h-[400px] px-[16px] pt-[12px] pb-[64px] rounded-md">
+            <article className="relative flex flex-col w-full bg-primary h-[400px] px-[16px] py-[12px] rounded-md">
               {watchRadio === "chat" ? (
                 <>
                   <article
@@ -333,22 +357,52 @@ export default function Custom() {
                   </article>
                 </>
               ) : (
-                <>
+                <section className="flex flex-col gap-2 w-[300px] md:w-[400px] overflow-auto h-[360px] justify-between items-center">
                   <input
                     type="file"
                     accept="image/*"
-                    {...register("imageFile", { required: true })}
-                    onChange={e => {
-                      handleThumbnail(e);
-                    }}
+                    id="imageFile"
+                    className="hidden"
+                    disabled={isSubmitting}
+                    {...register("imageFile", {
+                      required: true,
+                      onChange: e => {
+                        handleThumbnail(e);
+                      },
+                    })}
                   />
-                  <div className="relative w-full h-full">
-                    <Image src={thumbnail || "/"} fill alt="Image" />
-                  </div>
-                  <button type="submit" disabled={isSubmitting}>
-                    서브밋
+                  <label
+                    htmlFor="imageFile"
+                    className="bg-primary-80 w-fit px-[16px] py-[12px] rounded-md"
+                  >
+                    <p>사진 등록</p>
+                  </label>
+                  {thumbnail && (
+                    <div className="w-full h-full relative bg-primary-30 rounded-md">
+                      <div className="relative w-full h-full">
+                        <Image
+                          src={generatedImageSrc || thumbnail}
+                          fill
+                          objectFit='contain'
+                          alt="Image"
+                        />
+                      </div>
+                      {isSubmitting && (
+                        <div className="w-full h-full absolute left-[50%] top-[50%]">
+                          <LoadingWithBG text="이미지 생성중..." />
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  <button
+                    className="bg-primary-80 w-fit px-[16px] py-[12px] rounded-md disabled:bg-gray disabled:text-black"
+                    type="submit"
+                    disabled={isSubmitting || !thumbnail}
+                  >
+                    이미지 생성
                   </button>
-                </>
+                </section>
               )}
             </article>
           </form>
