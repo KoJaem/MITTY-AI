@@ -145,14 +145,14 @@ export default function Main() {
                 {history.map((data, i) => {
                   return i % 2 === 0 ? (
                     <p
-                      className="bg-gray px-[12px] py-[8px] rounded-md self-end ml-[20px] mr-[4px] break-all leading-5"
+                      className="bg-primary-30 px-[12px] py-[8px] rounded-md self-end ml-[20px] mr-[4px] break-all leading-5"
                       key={i}
                     >
                       {data}
                     </p>
                   ) : (
                     <p
-                      className=" bg-amber-300 w-fit px-[12px] py-[8px] rounded-md ml-[4px] mr-[20px] break-all leading-5"
+                      className=" bg-purple-300 w-fit px-[12px] py-[8px] rounded-md ml-[4px] mr-[20px] break-all leading-5"
                       key={i}
                     >
                       {data}
