@@ -35,6 +35,12 @@ export default function Sidebar() {
       animate={isOpen ? "open" : "closed"}
       custom={height}
       ref={containerRef}
+      exit={{
+        opacity: [1, 0],
+        transition: {
+          duration: 1,
+        },
+      }}
       className={`absolute top-[0px] left-0 bottom-0 w-full max-w-[300px]`}
     >
       <motion.div

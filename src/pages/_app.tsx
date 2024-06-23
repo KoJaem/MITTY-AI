@@ -8,12 +8,12 @@ export default function App({ Component, pageProps }: AppProps) {
   const { asPath } = useRouter();
   return (
     <AnimatePresence mode="wait">
-      <section className='w-full flex justify-center'>
-        <motion.section key={asPath} className="relative w-full max-w-[800px]">
+      <motion.section key={asPath} className="w-full flex justify-center">
+        <motion.section className="relative w-full max-w-[800px]">
           <Component {...pageProps} />
           {asPath !== "/" && <Sidebar />}
         </motion.section>
-      </section>
+      </motion.section>
     </AnimatePresence>
   );
 }

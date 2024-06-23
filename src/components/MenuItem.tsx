@@ -1,4 +1,6 @@
 import { motion } from "framer-motion";
+import { menuItem } from './Navigation';
+import { useRouter } from 'next/router';
 
 const variants = {
   open: {
@@ -17,10 +19,9 @@ const variants = {
   },
 };
 
-const colors = ["#FF008C", "#D309E1", "#9C1AFF", "#7700FF", "#4400FF"];
-
-export const MenuItem = ({ i }: { i: number }) => {
-  const style = { border: `2px solid ${colors[i]}` };
+export const MenuItem = (props: menuItem) => {
+  // const style = { border: `2px solid ${colors[i]}` };
+  const router = useRouter()
   return (
     <motion.li
       className="mb-[20px] flex items-center cursor-pointer"
@@ -29,10 +30,18 @@ export const MenuItem = ({ i }: { i: number }) => {
       whileTap={{ scale: 0.95 }}
     >
       <div
-        className="w-[40px] h-[40px] rounded-full flex-[40px_0_0] mr-[20px]"
-        style={style}
-      />
-      <div className="rounded w-[200px] h-[20px] flex-1" style={style} />
+        className={`w-[40px] h-[40px] rounded-full mr-[20px] border-[2px] border-solid flex items-center justify-center`}
+        style={{
+          borderColor: props.color,
+        }}
+      >{props.icon}</div>
+      <div
+        className="rounded-md flex items-center justify-center h-[20px] flex-1 border-[2px] border-solid whitespace-nowrap p-4"
+        onClick={() => router.push(props.url)}
+        style={{
+          borderColor: props.color,
+        }}
+      >{props.description}</div>
     </motion.li>
   );
 };
