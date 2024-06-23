@@ -20,10 +20,8 @@ interface FormType {
 export default function Custom() {
   const [history, setHistory] = useState<Array<string>>([]);
   const [promptDisable, setPromptDisable] = useState<boolean>(false);
-  const [thumbnail, setThumbnail] = useState<string | null>(null);
-  const [generatedImageSrc, setGeneratedImageSrc] = useState<string | null>(
-    null
-  );
+  const [thumbnail, setThumbnail] = useState<string>();
+  const [generatedImageSrc, setGeneratedImageSrc] = useState<string>();
 
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
@@ -155,8 +153,8 @@ export default function Custom() {
     });
     setHistory([]);
     setPromptDisable(false);
-    setThumbnail(null);
-    setGeneratedImageSrc(null);
+    setThumbnail(undefined);
+    setGeneratedImageSrc(undefined);
   };
 
   return (
@@ -312,7 +310,7 @@ export default function Custom() {
               {watchRadio === "chat" ? (
                 <>
                   <article
-                    className="flex flex-col gap-2 w-[300px] md:w-[400px] overflow-auto h-[360px] z-[999px]"
+                    className="flex flex-col gap-2 w-[200px] 3xsm:w-[240px] 2xsm:w-[280px] xsm:w-[300px] md:w-[400px] overflow-auto h-[360px] z-[999px]"
                     ref={chatContainerRef}
                   >
                     {history.map((data, i) => {
@@ -357,7 +355,7 @@ export default function Custom() {
                   </article>
                 </>
               ) : (
-                <section className="flex flex-col gap-2 w-[300px] md:w-[400px] overflow-auto h-[360px] justify-between items-center">
+                <section className="flex flex-col gap-2 w-[200px] 3xsm:w-[240px] 2xsm:w-[280px] xsm:w-[300px] md:w-[400px] overflow-auto h-[360px] justify-between items-center self-center">
                   <input
                     type="file"
                     accept="image/*"
@@ -379,16 +377,16 @@ export default function Custom() {
                   </label>
                   {thumbnail && (
                     <div className="w-full h-full relative bg-primary-30 rounded-md">
-                      <div className="relative w-full h-full">
+                      <div className="relative w-full h-full flex">
                         <Image
                           src={generatedImageSrc || thumbnail}
                           fill
-                          objectFit='contain'
+                          objectFit="contain"
                           alt="Image"
                         />
                       </div>
                       {isSubmitting && (
-                        <div className="w-full h-full absolute left-[50%] top-[50%]">
+                        <div className="absolute left-[50%] top-[50%] ">
                           <LoadingWithBG text="이미지 생성중..." />
                         </div>
                       )}
