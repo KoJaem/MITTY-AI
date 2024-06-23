@@ -64,7 +64,7 @@ export default async function handler(
         messages: [
           {
             role: "system",
-            content: prompt,
+            content: `${prompt}. 대답할때 마크다운 문법을 사용하지마.`,
           },
           ...history,
           { role: "user", content: chat },
