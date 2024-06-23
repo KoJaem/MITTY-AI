@@ -1,5 +1,6 @@
 import Loading from "@/components/Loading";
 import LoadingWithBG from "@/components/LoadingWithBG";
+import { Seo } from '@/components/Seo';
 import { formatOpenAIChatHistory } from "@/utils/formatHistory";
 import { notify } from "@/utils/toast";
 import { PaperAirplaneIcon } from "@heroicons/react/16/solid";
@@ -169,6 +170,8 @@ export default function Custom() {
   };
 
   return (
+    <>
+    <Seo title='Custom'/>
     <motion.section
       initial={{ opacity: 0 }}
       animate={{
@@ -423,5 +426,6 @@ export default function Custom() {
       </section>
       <ToastContainer />
     </motion.section>
+    </>
   );
 }

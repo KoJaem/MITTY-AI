@@ -1,3 +1,4 @@
+import { Seo } from '@/components/Seo';
 import { ChatBubbleOvalLeftEllipsisIcon } from "@heroicons/react/16/solid";
 import { motion } from "framer-motion";
 import { useRouter } from "next/router";
@@ -41,6 +42,8 @@ export default function Index() {
   const router = useRouter();
 
   return (
+    <>
+    <Seo />
     <motion.section
       initial={{ opacity: 0 }}
       animate={{
@@ -251,5 +254,6 @@ export default function Index() {
         </motion.button>
       </section>
     </motion.section>
+    </>
   );
 }
