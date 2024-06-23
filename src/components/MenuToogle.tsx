@@ -19,7 +19,7 @@ interface MenuToggleProps {
 export const MenuToggle: React.FC<MenuToggleProps> = ({ toggle }) => (
   <button
     onClick={toggle}
-    className="outline-none border-none cursor-pointer absolute top-[18px] left-[15px] w-[50px] h-[50px] rounded-full bg-transparent flex items-center justify-center"
+    className="outline-none border-none cursor-pointer pointer-events-auto absolute top-[18px] left-[15px] w-[50px] h-[50px] rounded-full bg-transparent flex items-center justify-center"
   >
     <svg width="23" height="23" viewBox="0 0 23 23">
       <Path

@@ -41,7 +41,7 @@ export default function Sidebar() {
           duration: 1,
         },
       }}
-      className={`absolute top-[0px] left-0 bottom-0 w-full max-w-[300px]`}
+      className={`absolute top-[0px] left-0 bottom-0 w-full max-w-[300px] ${isOpen ? 'pointer-events-auto' : 'pointer-events-none'}`}
     >
       <motion.div
         className="absolute top-[0px] left-0 bottom-0 w-full bg-white"
