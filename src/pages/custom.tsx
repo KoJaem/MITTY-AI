@@ -1,6 +1,7 @@
 import Loading from "@/components/Loading";
 import LoadingWithBG from "@/components/LoadingWithBG";
 import { formatOpenAIChatHistory } from "@/utils/formatHistory";
+import { notify } from "@/utils/toast";
 import { PaperAirplaneIcon } from "@heroicons/react/16/solid";
 import { yupResolver } from "@hookform/resolvers/yup";
 import axios from "axios";
@@ -8,6 +9,7 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { Controller, FormProvider, useForm, useWatch } from "react-hook-form";
+import { ToastContainer } from "react-toastify";
 import { object, string } from "yup";
 
 interface FormType {
@@ -105,6 +107,14 @@ export default function Custom() {
         setGeneratedImageSrc(response.data.url);
       }
     } catch (error) {
+      if (watchRadio === "chat") {
+        setHistory(prev => [
+          ...prev,
+          `오류가 발생했습니다. 다시 시도해주세요.`,
+        ]);
+      } else {
+        notify();
+      }
     } finally {
       setPromptDisable(false);
     }
@@ -307,7 +317,11 @@ export default function Custom() {
                 {...register("prompt")}
               />
             </article>
-            <article className={`relative flex flex-col w-full bg-primary h-[400px] px-[16px] pt-[12px] rounded-md ${watchRadio === 'chat' ? 'pb-[64px]' : 'pb-[12px]'}`}>
+            <article
+              className={`relative flex flex-col w-full bg-primary h-[400px] px-[16px] pt-[12px] rounded-md ${
+                watchRadio === "chat" ? "pb-[64px]" : "pb-[12px]"
+              }`}
+            >
               {watchRadio === "chat" ? (
                 <>
                   <article
@@ -407,6 +421,7 @@ export default function Custom() {
           </form>
         </FormProvider>
       </section>
+      <ToastContainer />
     </motion.section>
   );
 }
