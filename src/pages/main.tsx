@@ -34,8 +34,6 @@ export default function Main() {
 
   const submit = async (data: FormType) => {
     try {
-      console.log(data.chat);
-
       const chat = data.chat;
 
       resetField("chat");

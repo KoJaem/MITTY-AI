@@ -52,10 +52,6 @@ export default async function handler(
 
       const imageFileInfo = analytics?.choices[0]?.message?.content;
 
-      console.log(imageFileInfo);
-
-      // console.log("imageFileInfo", imageFileInfo);
-
       const response = await openai.images.generate({
         model: "dall-e-3",
         prompt: `${imageFileInfo} 의 정보를 기반으로 ${prompt}`,

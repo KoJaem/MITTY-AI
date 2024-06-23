@@ -55,16 +55,12 @@ export default async function handler(
 
     const userFaceInfo = analytics?.choices[0]?.message?.content;
 
-    // console.log("userFaceInfo", userFaceInfo);
-
     const response = await openai.images.generate({
       model: "dall-e-3",
       prompt: `${userFaceInfo} 은 사용자의 얼굴에 대한 정보야. 이 정보를 기반으로 캐릭터를 하나 만들어줘.`,
       n: 1,
       size: "1024x1024",
     });
-
-    // console.log("response.data[0].url", response.data[0].url);
 
     return res.status(200).json({ url: response.data[0].url });
   } catch (error) {
