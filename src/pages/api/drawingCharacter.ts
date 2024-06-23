@@ -18,12 +18,6 @@ export default async function handler(
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const OPEN_API_KEY = process.env.OPENAI_API_KEY;
-
-  const openai = new OpenAI({
-    apiKey: OPEN_API_KEY,
-  });
-
   const { image } = req.body;
 
   if (!image) {
@@ -31,6 +25,10 @@ export default async function handler(
   }
 
   try {
+    const openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    });
+
     const analytics = await openai.chat.completions.create({
       model: "gpt-4o",
       messages: [
