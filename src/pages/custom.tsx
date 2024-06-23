@@ -68,44 +68,45 @@ export default function Custom() {
   const submit = async (data: FormType) => {
     setPromptDisable(true);
 
-    const { chat, type, prompt, imageFile } = data;
+    try {
+      const { chat, type, prompt, imageFile } = data;
 
-    if (type === "chat") {
-      resetField("chat");
+      if (type === "chat") {
+        resetField("chat");
 
-      const formattedOpenAIChatHistory = formatOpenAIChatHistory(history);
+        const formattedOpenAIChatHistory = formatOpenAIChatHistory(history);
 
-      setHistory(prev => [...prev, `${chat}`]);
+        setHistory(prev => [...prev, `${chat}`]);
 
-      const response = await axios.post("/api/customAI", {
-        chat,
-        type,
-        prompt,
-        history: formattedOpenAIChatHistory,
-      });
+        const response = await axios.post("/api/customAI", {
+          chat,
+          type,
+          prompt,
+          history: formattedOpenAIChatHistory,
+        });
 
-      setHistory(prev => [...prev, `${response.data}`]);
-    }
-
-    if (type === "image") {
-      // FileList validation
-      if (!imageFile || imageFile.length === 0) {
-        return;
+        setHistory(prev => [...prev, `${response.data}`]);
       }
 
-      const file = imageFile[0];
-      const base64Image = await convertToBase64(file);
+      if (type === "image") {
+        // FileList validation
+        if (!imageFile || imageFile.length === 0) {
+          return;
+        }
 
-      try {
+        const file = imageFile[0];
+        const base64Image = await convertToBase64(file);
+
         const response = await axios.post("/api/customAI", {
           image: base64Image,
           type,
           prompt,
         });
         setGeneratedImageSrc(response.data.url);
-      } catch (error) {
-        console.error("Failed to upload image", error);
       }
+    } catch (error) {
+    } finally {
+      setPromptDisable(false);
     }
   };
 
@@ -306,11 +307,11 @@ export default function Custom() {
                 {...register("prompt")}
               />
             </article>
-            <article className="relative flex flex-col w-full bg-primary h-[400px] px-[16px] py-[12px] rounded-md">
+            <article className={`relative flex flex-col w-full bg-primary h-[400px] px-[16px] pt-[12px] rounded-md ${watchRadio === 'chat' ? 'pb-[64px]' : 'pb-[12px]'}`}>
               {watchRadio === "chat" ? (
                 <>
                   <article
-                    className="flex flex-col gap-2 w-[200px] 3xsm:w-[240px] 2xsm:w-[280px] xsm:w-[300px] md:w-[400px] overflow-auto h-[360px] z-[999px]"
+                    className="flex flex-col gap-2 w-full xsm:w-[400px] overflow-auto h-full z-[999px]"
                     ref={chatContainerRef}
                   >
                     {history.map((data, i) => {
@@ -355,7 +356,7 @@ export default function Custom() {
                   </article>
                 </>
               ) : (
-                <section className="flex flex-col gap-2 w-[200px] 3xsm:w-[240px] 2xsm:w-[280px] xsm:w-[300px] md:w-[400px] overflow-auto h-[360px] justify-between items-center self-center">
+                <section className="flex flex-col gap-2 w-[200px] 3xsm:w-[240px] 2xsm:w-[280px] xsm:w-[300px] md:w-[400px] overflow-auto h-full justify-between items-center self-center">
                   <input
                     type="file"
                     accept="image/*"
@@ -376,7 +377,7 @@ export default function Custom() {
                     <p>사진 등록</p>
                   </label>
                   {thumbnail && (
-                    <div className="w-full h-full relative bg-primary-30 rounded-md">
+                    <div className="w-full h-full relative bg-primary-30 rounded-md overflow-hidden">
                       <div className="relative w-full h-full flex">
                         <Image
                           src={generatedImageSrc || thumbnail}
