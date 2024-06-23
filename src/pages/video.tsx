@@ -1,8 +1,10 @@
 import LoadingWithBG from "@/components/LoadingWithBG";
+import { notify } from "@/utils/toast";
 import axios from "axios";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
+import { ToastContainer } from "react-toastify";
 import { CamToImageResponse } from "./api/drawingCharacter";
 
 export default function VideoCapture() {
@@ -57,7 +59,10 @@ export default function VideoCapture() {
       );
       setSrc(response.data.url);
     } catch (error) {
+      notify();
       console.error("Error uploading image", error);
+      setThumbnail(undefined);
+      initCamera();
     } finally {
       setIsLoading(false);
     }
@@ -133,7 +138,7 @@ export default function VideoCapture() {
         </motion.h3>
       </section>
       <div className="flex flex-col items-center justify-center">
-        <div className="flex flex-col items-center">
+        <div className="flex flex-col items-center gap-[20px] xsm:gap-0">
           <div className="relative w-[100vw] 2xsm:w-[300px] xsm:w-[400px] h-[200px] 2xsm:h-[300px] xsm:h-[400px] flex items-center">
             {!thumbnail ? (
               <video
@@ -147,7 +152,7 @@ export default function VideoCapture() {
               <Image
                 src={src ?? thumbnail}
                 fill
-                className='rounded-md'
+                className="rounded-md"
                 objectFit="contain"
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 alt="User Image"
@@ -180,6 +185,7 @@ export default function VideoCapture() {
           )}
         </div>
       </div>
+      <ToastContainer />
     </motion.section>
   );
 }
