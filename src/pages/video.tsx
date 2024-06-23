@@ -60,7 +60,6 @@ export default function VideoCapture() {
       setSrc(response.data.url);
     } catch (error) {
       notify();
-      console.error("Error uploading image", error);
       setThumbnail(undefined);
       initCamera();
     } finally {
