@@ -1,8 +1,10 @@
 import Spinner from "@/components/Spinner";
+import { notify } from "@/utils/toast";
 import axios from "axios";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
+import { ToastContainer } from "react-toastify";
 import { SpeechToImageResponse } from "./api/speechToImage";
 
 export default function Home() {
@@ -63,7 +65,7 @@ export default function Home() {
       setText(response.data.speechText);
       setSrc(response.data.image);
     } catch (error) {
-      console.error("파일 전송 실패", error);
+      notify();
     } finally {
       setIsLoading(false);
     }
@@ -170,6 +172,7 @@ export default function Home() {
             이미지 생성
           </button>
         </section>
+        {!src && !text && isLoading && <Spinner />}
         {src && text && (
           <article className="w-full bg-primary-50 p-2 flex flex-col gap-[4px]">
             <article className="relative w-[200px] 2xsm:w-[300px]  xsm:w-[400px] h-[400px] self-center">
@@ -180,12 +183,17 @@ export default function Home() {
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 alt="Generated Image"
               />
+              {isLoading && (
+                <div className="absolute left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%]">
+                  <Spinner />
+                </div>
+              )}
             </article>
             <p className="flex w-full justify-end">{text}</p>
           </article>
         )}
-        {isLoading && <Spinner />}
       </section>
+      <ToastContainer />
     </motion.section>
   );
 }
