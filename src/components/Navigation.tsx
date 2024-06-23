@@ -47,7 +47,7 @@ const menuItems: Array<menuItem> = [
     id: 2,
     color: "#9C1AFF",
     icon: "🎤",
-    description: "음성인식 그림그리기",
+    description: "음성인식 그림 그리기",
     url: "/audio",
   },
   {
