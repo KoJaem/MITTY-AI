@@ -46,12 +46,14 @@ export default async function handler(
         {
           role: "system",
           content:
-            "입력받은 이미지는 사용자의 얼굴이야. 얼굴에 대해서 최대한 분석해줘. 눈, 코, 입, 헤어스타일, 표정, 성별 등등 분석할 수 있는 내용을 모두 분석해. 잡다한 이야기는 하지말고, 분석한 특징들에 대해서만 최대한 많이 나열해서 답변해.",
+            "입력받은 이미지에 대해서 최대한 분석해줘.  눈, 코, 입, 헤어스타일, 표정, 성별 등등 분석할 수 있는 내용을 모두 분석해. 잡다한 이야기는 하지말고, 분석한 특징들에 대해서만 최대한 많이 나열해서 답변해.",
         },
       ],
     });
 
     const userFaceInfo = analytics?.choices[0]?.message?.content;
+
+    console.log(userFaceInfo)
 
     const response = await openai.images.generate({
       model: "dall-e-3",
