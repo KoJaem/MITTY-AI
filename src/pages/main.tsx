@@ -33,22 +33,24 @@ export default function Main() {
   } = formMethods;
 
   const submit = async (data: FormType) => {
-    console.log(data.chat);
+    try {
+      const chat = data.chat;
 
-    const chat = data.chat;
+      resetField("chat");
 
-    resetField("chat");
+      const formattedOpenAIChatHistory = formatOpenAIChatHistory(history);
 
-    const formattedOpenAIChatHistory = formatOpenAIChatHistory(history);
+      setHistory(prev => [...prev, `${chat}`]);
 
-    setHistory(prev => [...prev, `${chat}`]);
+      const response = await axios.post("/api/chat", {
+        chat,
+        history: formattedOpenAIChatHistory,
+      });
 
-    const response = await axios.post("/api/chat", {
-      chat,
-      history: formattedOpenAIChatHistory,
-    });
-
-    setHistory(prev => [...prev, `${response.data}`]);
+      setHistory(prev => [...prev, `${response.data}`]);
+    } catch (error) {
+      setHistory(prev => [...prev, `오류가 발생했습니다. 다시 시도해주세요.`]);
+    }
   };
 
   const scrollToBottom = () => {
@@ -139,20 +141,20 @@ export default function Main() {
           >
             <article className="relative flex flex-col w-full bg-primary h-[400px] px-[16px] pt-[12px] pb-[64px] rounded-md">
               <article
-                className="flex flex-col gap-2 w-[300px] md:w-[400px] overflow-auto h-[360px] z-[999px]"
+                className="flex flex-col gap-2 w-full xsm:w-[400px] overflow-auto h-full z-[999px]"
                 ref={chatContainerRef}
               >
                 {history.map((data, i) => {
                   return i % 2 === 0 ? (
                     <p
-                      className="bg-gray px-[12px] py-[8px] rounded-md self-end ml-[20px] mr-[4px] break-all leading-5"
+                      className="bg-primary-30 px-[12px] py-[8px] rounded-md self-end ml-[20px] mr-[4px] break-all leading-5"
                       key={i}
                     >
                       {data}
                     </p>
                   ) : (
                     <p
-                      className=" bg-amber-300 w-fit px-[12px] py-[8px] rounded-md ml-[4px] mr-[20px] break-all leading-5"
+                      className=" bg-purple-300 w-fit px-[12px] py-[8px] rounded-md ml-[4px] mr-[20px] break-all leading-5"
                       key={i}
                     >
                       {data}
