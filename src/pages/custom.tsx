@@ -113,7 +113,7 @@ export default function Custom() {
           `오류가 발생했습니다. 다시 시도해주세요.`,
         ]);
       } else {
-        notify();
+        notify('사진용량이 크거나, 명령어에서 문제가 발견되었습니다.');
       }
     } finally {
       setPromptDisable(false);
