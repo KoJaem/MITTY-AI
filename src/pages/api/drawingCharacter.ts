@@ -53,8 +53,6 @@ export default async function handler(
 
     const userFaceInfo = analytics?.choices[0]?.message?.content;
 
-    console.log(userFaceInfo)
-
     const response = await openai.images.generate({
       model: "dall-e-3",
       prompt: `${userFaceInfo} 은 사용자의 얼굴에 대한 정보야. 이 정보를 기반으로 2D 캐릭터를 하나 만들어줘.`,
